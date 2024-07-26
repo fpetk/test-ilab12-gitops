@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:  
+    tad.gitops.set/image: ".spec.template.spec.containers[0].image"
+    tad.gitops.get/image: ".spec.template.spec.containers[0].image"
+    tad.gitops.set/replicas: ".spec.replicas"
+    tad.gitops.get/replicas: ".spec.replicas" 
+  labels: 
+    app.kubernetes.io/instance: test-ilab12
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name:  test-ilab12
+    app.kubernetes.io/part-of: test-ilab12  
+  name: test-ilab12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance:  test-ilab12 
+  template:
+    metadata: 
+      labels:
+        app.kubernetes.io/instance:  test-ilab12
+    spec:
+      containers:
+      - image:  quay.io/tpetkos/ilab:latest
+        name: app-inference
+        envFrom:
+        - configMapRef:
+            name: test-ilab12-model-config
+        ports:
+        - containerPort: 8501
+        securityContext:
+          runAsNonRoot: true
